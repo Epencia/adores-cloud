@@ -1,0 +1,437 @@
+import React , {useEffect, useState, useContext  } from 'react';
+import { View, Text, Image, Pressable, StyleSheet, Dimensions,TouchableOpacity,StatusBar,ScrollView,Alert } from 'react-native';
+import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import QRCode from 'react-native-qrcode-svg';
+import { GlobalContext } from '../global/GlobalState';
+import { GlobalCarte } from '../global/GlobalCarte';
+
+
+export default function Exemple ({navigation}) {
+  const rotation = useSharedValue(0);
+  const [flipped, setFlipped] = useState(false);
+  const [showBalance, setShowBalance] = useState(true);
+
+  const [user, setUser] = useContext(GlobalContext);
+  const [count, setCount] = useState([]);
+  const [carte, setCarte] = useContext(GlobalCarte);
+
+
+
+  const flip = () => {
+    setFlipped(!flipped);
+    rotation.value = withTiming(flipped ? 0 : 180, { duration: 600 });
+  };
+
+  const frontAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ rotateY: `${rotation.value}deg` }],
+    zIndex: rotation.value < 90 ? 1 : 0,
+  }));
+
+  const backAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ rotateY: `${rotation.value + 180}deg` }],
+    zIndex: rotation.value >= 90 ? 1 : 0,
+  }));
+
+
+
+
+   useEffect(() => {
+    const updateData = () => {
+      getNombreNotification();
+      getCarte();
+    };
+    updateData(); // Appeler la fonction immédiatement au montage
+    const intervalId = setInterval(updateData, 1000);
+    return () => clearInterval(intervalId);
+        }, []);
+
+
+        // FUNCTION
+        // Notification debut
+  const getNombreNotification = () =>{
+
+    fetch(`https://adores.cloud/api/nombre-notification.php?id=${user[0].id}`,{
+      method:'post',
+        header:{
+            'Accept': 'application/json',
+            'Content-type': 'application/json'
+        },
+        
+    })
+    .then((response) => response.json())
+     .then(
+         (result)=>{
+          setCount(result);
+          }
+     )
+     .catch((error)=>{
+      Alert.alert("Erreur",error);
+     });
+  
+    }
+
+    // CARTE
+const getCarte = async () => {
+  try {
+   const response = await fetch(`https://adores.cloud/api/liste-carte.php?matricule=${user[0].matricule}`, {
+     headers: {
+       'Cache-Control': 'no-cache',
+     },
+   });
+   const newData = await response.json();
+   setCarte(newData);
+   
+ } catch (error) {
+   Alert.alert("Erreur carte", error.message);
+ }
+ }
+
+  return (
+    <View style={styles.container}>
+      <StatusBar backgroundColor="white" barStyle="dark-content" />
+
+      {/* Header */}
+               <View style={styles.header}>
+                <Image
+                  source={require('../assets/logo-adores-business3.png')} // Your logo path
+                  style={{ width: 100, height: 40,marginLeft:16 }} // Adjust size
+                  resizeMode="contain"
+                />
+  
+                <View style={{ flexDirection: 'row', padding: 20 }}>
+              
+                  <TouchableOpacity
+                style={styles.appButton2} onPress={() => navigation.navigate('Notifications')}>
+                <MaterialCommunityIcons name="bell" size={24} color="#2593B6" />
+                {count > 0 && (
+                <View
+                  style={{
+                    position: 'absolute',
+                    top: -5,
+                    right: 8,
+                    backgroundColor: 'red',
+                    borderRadius: 50,
+                    width: 15,
+                    height: 15,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}>
+                  <Text style={{ color: 'white', fontSize: 8 }}>{count}</Text>
+                </View>
+                )}
+              </TouchableOpacity>
+              <View style={{marginRight:8}}></View>
+              <TouchableOpacity
+                style={styles.appButton2}
+                onPress={() => navigation.navigate('Deconnexion')}>
+                <MaterialCommunityIcons name="logout" size={24} color="#2593B6" />
+              </TouchableOpacity>
+                </View>
+                </View>
+
+
+<ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
+
+      {/* QR Code */}
+       <View style={styles.profileContent}>
+        
+             <TouchableOpacity style={styles.profileAvatar} onPress={() => navigation.navigate('Profil')}>
+              {user[0].photo64 ? (
+              <Image
+              source={{ uri: `data:${user[0].type};base64,${user[0].photo64.toString('base64')}` }}
+              style={styles.profileAvatarImg}/>
+              ) : (
+              <Image source={require("../assets/user-profile.jpg")} style={styles.profileAvatarImg}/>
+              )}
+              <View style={styles.profileAvatarNotification} />
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => setShowBalance(!showBalance)} style={styles.profileSubtitle}>
+                <View><Text style={styles.balanceText}>
+                  {carte && carte.length > 0 && carte[0].numero_carte ? (
+            <Text style={styles.balanceTitle}>
+              {showBalance
+          ? carte[0].solde_carte.toString().replace(/\d/g, '*')
+          : parseFloat(carte[0].solde_carte).toLocaleString('fr-FR')}{' '}
+         <Text style={{ fontSize: 17, fontWeight: 'bold' }}>F </Text>
+            </Text>
+            ) : (
+              <Text style={styles.balanceTitle}>0{' '} 
+              <Text style={{ fontSize: 17, fontWeight: 'bold' }}>F </Text>
+              </Text>
+            )}
+                  </Text></View>
+            </TouchableOpacity>  
+
+        </View>
+        {/* QR Code */}
+
+
+
+      <Pressable onPress={flip} style={styles.cardWrapper}>
+        {/* Recto */}
+        <Animated.View style={[styles.card, frontAnimatedStyle]}>
+          <View style={styles.qrWrapper}>
+            <Image
+              source={require('../assets/logo.png')}
+              style={styles.filigrane}
+            />
+            <View style={{ alignItems: 'center', justifyContent: 'center', padding: 20,borderWidth: 0, }}>
+            {carte && carte.length > 0 && carte[0].numero_carte ? (
+       <QRCode
+          value={carte[0].numero_carte}
+          size={200}
+          backgroundColor="white"
+          color="black"
+        />
+           ) : (
+       <QRCode
+          value="001"
+          size={200}
+          backgroundColor="white"
+          color="black"
+        />
+            )}
+            </View>
+            <Image
+              source={require('../assets/logo.png')}
+              style={styles.qrLogo}
+            />
+          </View>
+        </Animated.View>
+
+        {/* Verso */}
+        <Animated.View style={[styles.card, styles.backCard, backAnimatedStyle]}>
+          <Text style={styles.backText}>adorès</Text>
+        </Animated.View>
+      </Pressable>
+      
+      </ScrollView>
+
+
+         <View style={styles.overlay}>
+     <View style={styles.footer}>
+       <TouchableOpacity onPress={() => navigation.navigate('Menu')} style={{ flex: 1 }}>
+         <View style={styles.btn}>
+           <MaterialCommunityIcons color="#fff" name="arrow-expand-all" size={20} />
+           <Text style={styles.buttonText}>Menu</Text>
+         </View>
+       </TouchableOpacity>
+       <TouchableOpacity onPress={() => navigation.navigate('Partenaires')} style={{ flex: 1, paddingHorizontal: 8 }}>
+         <View style={styles.btn}>
+           <MaterialCommunityIcons color="#fff" name="store" size={20} />
+           <Text style={styles.buttonText}>Partenaires</Text>
+         </View>
+       </TouchableOpacity>
+     </View>
+   </View>
+
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: 'white',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  cardWrapper: {
+    width: 250,
+    height: 350,
+    perspective: 1000,
+  },
+  card: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'white',
+    borderRadius: 10,
+    borderWidth:1,
+    borderColor:"#007BFF",
+    backfaceVisibility: 'hidden',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  backCard: {
+    backgroundColor: '#007BFF',
+    transform: [{ rotateY: '180deg' }],
+  },
+  backText: {
+    fontSize: 55,
+    color: 'white',
+    fontFamily: 'Poppins',
+  },
+  qrWrapper: {
+    width: 200,
+    height: 200,
+    position: 'relative',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  qrCode: {
+    width: 200,
+    height: 200,
+    position: 'absolute',
+    zIndex: 2,
+  },
+  filigrane: {
+    width: 100,
+    height: 100,
+    position: 'absolute',
+    opacity: 0.1,
+    zIndex: 1,
+  },
+  qrLogo: {
+    width: 50,
+    height: 50,
+    position: 'absolute',
+    zIndex: 3,
+    borderRadius: 10,
+    backgroundColor: 'white',
+    padding: 5,
+  },
+  overlay: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: '#fff',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingTop: 12,
+    paddingHorizontal: 16,
+    paddingBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.22,
+    shadowRadius: 2.22,
+    elevation: 3,
+  },
+  footer: {
+    flexGrow: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#fff',
+  },
+  btn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderWidth: 1,
+    backgroundColor: '#2593B6',
+    borderColor: '#2593B6',
+    height: 50,
+    //marginRight:10
+  },
+   button: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderWidth: 1,
+    backgroundColor: '#3C64B1', // Couleur Hostinger / personnalisée
+    borderColor: '#3C64B1',
+    height: 50,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'bold',
+    marginLeft:5
+  },
+  // balance
+  balanceWrapper: {
+  marginTop: -200,
+  marginBottom: 40,
+},
+balanceText: {
+  fontSize: 22,
+  fontWeight: 'bold',
+  color: '#007BFF',
+},
+// Profil
+profileContent: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 10,
+    marginTop:15,
+  },
+profileTitle: {
+    fontSize: 26,
+    fontWeight: 'bold',
+    lineHeight: 32,
+    color: '#121a26',
+
+  },
+  profileSubtitle: {
+    fontSize: 15,
+    fontWeight: 'bold',
+    color: '#778599',
+    marginTop:-10
+  },
+profileAvatar: {
+    position: 'relative',
+  },
+  profileAvatarImg: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    marginBottom: 20,
+  },
+  profileAvatarNotification: {
+    position: 'absolute',
+    borderRadius: 9999,
+    borderWidth: 2,
+    borderColor: '#fff',
+    bottom: 23,
+    right: 6,
+    width: 21,
+    height: 21,
+    backgroundColor: '#22C55E',
+  },
+  // HEADER
+  headerAction: {
+    width: 40,
+    height: 40,
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor:'white',
+    width:'100%',
+    //marginLeft:16,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.22,
+    shadowRadius: 2.22,
+    elevation: 3,
+    //marginRight:16
+  },
+  avatarImg2: {
+    width: 30,
+    height: 30,
+    borderRadius: 9999,
+    borderWidth:1,
+    borderColor:'gray'
+  },
+});

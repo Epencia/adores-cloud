@@ -1,20 +1,23 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useEffect,useState, useContext } from "react";
+import { View,Text } from 'react-native';
+import { GlobalProvider } from './global/GlobalState';
+import { GlobalCarteProvider } from "./global/GlobalCarte";
+import Routes from './routes';
 
-export default function App() {
+
+export default function App({navigation}) {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    
+        <View style={{flex:1}}>
+          <GlobalProvider>
+      <GlobalCarteProvider>
+        <Routes/>
+            <Text>Bienvenue dans notre application Adorès Cloud, nous sommes en maintenance et bientot nous serons disponibles</Text>
+       </GlobalCarteProvider>
+    </GlobalProvider>
+    
+        </View>
+      
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
