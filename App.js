@@ -12,7 +12,6 @@ export default function App({navigation}) {
           <GlobalProvider>
       <GlobalCarteProvider>
         <Routes/>
-            <Text>Bienvenue dans notre application Adorès Cloud, nous sommes en maintenance et bientot nous serons disponibles</Text>
        </GlobalCarteProvider>
     </GlobalProvider>
     
