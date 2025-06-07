@@ -9,8 +9,12 @@ import {
 } from 'react-native';
 import { WebView } from 'react-native-webview';
 
-export default function Diplomes() {
-  const pdfUrl = 'https://adores.cloud/api/diplome-pdf.php';
+
+export default function Diplomes({route}) {
+
+  const item = route?.params?.item;
+
+  const pdfUrl = `https://adores.cloud/api/diplome-pdf.php?matricule=${item.code_certificat}`;
 
    const handleDownload = () => {
     Linking.openURL(pdfUrl).catch(() => {
@@ -21,7 +25,7 @@ export default function Diplomes() {
   return (
     <View style={styles.container}>
       <WebView
-        source={{ uri: `https://adores.cloud/api/diplome-pdf.html` }}
+        source={{ uri: `https://adores.cloud/api/diplome-pdf.php?matricule=${item.code_certificat}` }}
         style={styles.webview}
         startInLoadingState
       />
@@ -52,7 +56,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   downloadButton: {
-    backgroundColor: '#2593B6',
+    backgroundColor: '#0A84FF',
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 6,

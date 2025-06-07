@@ -1,7 +1,6 @@
 import React , {useEffect, useState, useContext  } from 'react';
 import { View, Text, Image, Pressable, StyleSheet, Dimensions,TouchableOpacity,StatusBar,ScrollView,Alert } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import QRCode from 'react-native-qrcode-svg';
 import { GlobalContext } from '../global/GlobalState';
 import { GlobalCarte } from '../global/GlobalCarte';
@@ -74,9 +73,10 @@ const getCarte = async () => {
        <View style={styles.profileContent}>
         
              <TouchableOpacity style={styles.profileAvatar} onPress={() => navigation.navigate('Profil')}>
-              {user[0].photo64 ? (
+              {user?.[0]?.photo64 ? (
+
               <Image
-              source={{ uri: `data:${user[0].type};base64,${user[0].photo64.toString('base64')}` }}
+              source={{ uri: `data:${user[0].type};base64,${user[0].photo64}` }}
               style={styles.profileAvatarImg}/>
               ) : (
               <Image source={require("../assets/user-profile.jpg")} style={styles.profileAvatarImg}/>
@@ -84,22 +84,21 @@ const getCarte = async () => {
               <View style={styles.profileAvatarNotification} />
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => setShowBalance(!showBalance)} style={styles.profileSubtitle}>
-                <View><Text style={styles.balanceText}>
-                  {carte && carte.length > 0 && carte[0].numero_carte ? (
-            <Text style={styles.balanceTitle}>
-              {showBalance
-          ? carte[0].solde_carte.toString().replace(/\d/g, '*')
-          : parseFloat(carte[0].solde_carte).toLocaleString('fr-FR')}{' '}
-         <Text style={{ fontSize: 17, fontWeight: 'bold' }}>F </Text>
-            </Text>
-            ) : (
-              <Text style={styles.balanceTitle}>0{' '} 
-              <Text style={{ fontSize: 17, fontWeight: 'bold' }}>F </Text>
-              </Text>
-            )}
-                  </Text></View>
-            </TouchableOpacity>  
+           <TouchableOpacity onPress={() => setShowBalance(!showBalance)} style={styles.profileSubtitle}>
+  {carte && carte.length > 0 && carte[0].numero_carte ? (
+    <Text style={styles.balanceText}>
+      {showBalance
+        ? carte[0].numero_carte.toString().replace(/\d/g, '*')
+        : parseFloat(carte[0].numero_carte).toLocaleString('fr-FR')}
+    </Text>
+  ) : (
+    <Text style={styles.balanceText}>
+      0 <Text style={{ fontSize: 17, fontWeight: 'bold' }}>F</Text>
+    </Text>
+  )}
+</TouchableOpacity>
+
+  
 
         </View>
         {/* QR Code */}
@@ -143,6 +142,7 @@ const getCarte = async () => {
           <Text style={styles.backText}>adorès</Text>
         </Animated.View>
       </Pressable>
+
       
       </ScrollView>
 
@@ -248,8 +248,8 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderWidth: 1,
-    backgroundColor: '#2593B6',
-    borderColor: '#2593B6',
+    backgroundColor: '#0A84FF',
+    borderColor: '#0A84FF',
     height: 50,
     //marginRight:10
   },
@@ -301,6 +301,15 @@ profileTitle: {
     fontWeight: 'bold',
     color: '#778599',
     marginTop:-10
+  },
+  profileSubtitle2: {
+    fontSize: 15,
+    fontWeight: 'bold',
+    color: '#778599',
+    marginTop:10,
+    textAlign:"center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 profileAvatar: {
     position: 'relative',

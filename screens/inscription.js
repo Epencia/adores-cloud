@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
   btn: {
     width: '100%',
     padding: 14,
-    backgroundColor: '#2593B6',
+    backgroundColor: '#0A84FF',
     borderRadius: 8,
     alignItems: 'center',
     marginBottom: 20,

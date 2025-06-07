@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "adores-cloud",
+    "name": "Adorès Cloud",
     "slug": "adores-cloud",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -21,7 +21,13 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.serviteur01.adorescloud"
+      "package": "com.mandigoentreprise.adorescloud",
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_BACKGROUND_LOCATION",
+        "FOREGROUND_SERVICE"
+      ]
     },
     "web": {
       "favicon": "./assets/favlogo.png"

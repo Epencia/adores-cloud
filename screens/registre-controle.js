@@ -60,7 +60,7 @@ const handleSearch = async () => {
           style={styles.logo}
         />
         <View style={styles.searchContainer}>
-          <View style={[styles.searchBar, { borderColor: errors.searchText ? 'red' : '#2593B6' }]}>
+          <View style={[styles.searchBar, { borderColor: errors.searchText ? 'red' : '#0A84FF' }]}>
             <Feather name="search" size={24} color="gray" style={styles.searchIcon} />
             <TextInput
               style={styles.input}
@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#2593B6',
+    borderColor: '#0A84FF',
     width: '100%',
   },
   searchIcon: {
@@ -175,8 +175,8 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderWidth: 1,
-    backgroundColor: '#2593B6',
-    borderColor: '#2593B6',
+    backgroundColor: '#0A84FF',
+    borderColor: '#0A84FF',
     width: 120,
     marginRight: 10,
   },
@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   thoughtsText: {
-    color: '#2593B6',
+    color: '#0A84FF',
     fontSize: 16,
     fontWeight: 'bold',
   },
@@ -237,8 +237,8 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderWidth: 1,
-    backgroundColor: '#2593B6',
-    borderColor: '#2593B6',
+    backgroundColor: '#0A84FF',
+    borderColor: '#0A84FF',
     width: 190,
     marginRight: 10,
     marginBottom: 10,

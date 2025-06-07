@@ -1,8 +1,9 @@
 import React , {useEffect, useState, useContext, useMemo } from 'react';
-import {SafeAreaView,StyleSheet,View,FlatList,Image,Text,TouchableOpacity,ActivityIndicator,TextInput,Alert,Share} from 'react-native';
+import {StyleSheet,View,FlatList,Image,Text,TouchableOpacity,ActivityIndicator,TextInput,Alert,Share} from 'react-native';
 import { MaterialCommunityIcons,Feather } from '@expo/vector-icons';
 import { GlobalContext } from '../global/GlobalState';
 import { GlobalCarte } from '../global/GlobalCarte';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 
 export default function Factures({navigation,item}){
@@ -152,7 +153,7 @@ export default function Factures({navigation,item}){
   // Erreur et Chargement --fin--
   
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
 
     {data.length > 0 ? (
      <View style={styles.searchBar}>
@@ -184,7 +185,7 @@ export default function Factures({navigation,item}){
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
 
 
-        <View style={[styles.cardIcon, { backgroundColor: "#2593B6" }]}>
+        <View style={[styles.cardIcon, { backgroundColor: "#0A84FF" }]}>
                 <MaterialCommunityIcons color="white" name='book-open-page-variant-outline' size={20} />
               </View>
          
@@ -235,14 +236,14 @@ export default function Factures({navigation,item}){
               <View style={styles.footer}>
                 <TouchableOpacity onPress={() => navigation.navigate('Edition de facture')} style={{ flex: 1 }}>
                   <View style={styles.btn}>
-                    <MaterialCommunityIcons color="#fff" name="calendar" size={20} />
+                    <MaterialCommunityIcons color="#fff" name="pencil" size={20} />
                     <Text style={styles.buttonText}>Editer une facture</Text>
                   </View>
                 </TouchableOpacity>
               </View>
             </View>
 
-      </View>
+      </SafeAreaView>
   );
 }
 
@@ -313,13 +314,13 @@ const styles = StyleSheet.create({
   cardCategory2: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#2593B6',
+    color: '#0A84FF',
   },
   cardPrice: {
     marginLeft: 'auto',
     fontSize: 17,
     fontWeight: '700',
-    color: '#2593B6',
+    color: '#0A84FF',
   },
   // OVERLAY
    overlay: {
@@ -358,8 +359,8 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderWidth: 1,
-    backgroundColor: '#2593B6',
-    borderColor: '#2593B6',
+    backgroundColor: '#0A84FF',
+    borderColor: '#0A84FF',
     height: 50,
     //marginRight:10
   },
@@ -418,7 +419,7 @@ const styles = StyleSheet.create({
     color: '#888',
   },
   followButton: {
-    backgroundColor: '#2593B6',
+    backgroundColor: '#0A84FF',
     paddingVertical: 8,
     paddingHorizontal: 16,
     borderRadius: 20,
@@ -433,17 +434,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth:1,
-    borderColor:"#2593B6"
+    borderColor:"#0A84FF"
   },
   followingButton: {
-    backgroundColor: '#2593B6',
+    backgroundColor: '#0A84FF',
   },
   followButtonText: {
     color: 'white',
     fontWeight:"bold"
   },
   followingButtonText: {
-    color: '#2593B6',
+    color: '#0A84FF',
     fontWeight:"bold"
   },
   description: {

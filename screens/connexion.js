@@ -1,9 +1,9 @@
 import React , {useEffect, useState, useContext  } from 'react';
 import {View,Text,TextInput,TouchableOpacity,Image,StyleSheet,Alert,Linking,SafeAreaView,StatusBar, ActivityIndicator
 } from 'react-native';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { GlobalContext } from '../global/GlobalState';
 import { MaterialIcons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Connexion({navigation}) {
 
@@ -22,9 +22,8 @@ export default function Connexion({navigation}) {
   const hideDialog = () => setVisible(false);
 
   useEffect(() => {
-    navigation.setOptions({ title: 'Connexion' });
     // Vérifier si l'utilisateur est connecté
-    if (user) {
+    if (navigation && user) {
       navigation.navigate('BottomTabs');
     }
   }, [user]);
@@ -57,6 +56,10 @@ export default function Connexion({navigation}) {
       const data = await response.json();
 
        if (data[0].login) {
+        // stockage
+        if (data[0].matricule) {
+      await AsyncStorage.setItem('matricule', data[0].matricule);
+    }
               // Rediriger ou stocker token
               setUser(data);
               navigation.navigate("Accueil");
@@ -98,7 +101,7 @@ export default function Connexion({navigation}) {
 
        <View style={styles.inputContainer}>
         <TextInput
-          style={[styles.input, { borderColor: errors.login ? 'red' : '#ccc' }]}
+          style={[styles.input, { borderColor: errors.mdp ? 'red' : '#ccc' }]}
           placeholder="Mot de passe"
           errorText={errors.mdp}
           secureTextEntry={!showmdp}
@@ -193,7 +196,7 @@ const styles = StyleSheet.create({
    btn: {
     width: '100%',
     padding: 14,
-    backgroundColor: '#2593B6',
+    backgroundColor: '#0A84FF',
     borderRadius: 8,
     alignItems: 'center',
     marginBottom: 20,

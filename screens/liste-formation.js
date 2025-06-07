@@ -7,7 +7,8 @@ import { MaterialCommunityIcons,Feather } from '@expo/vector-icons';
 
 export default function Formations({navigation,route}) {
 
-  const {item} = route.params;
+  const item = route?.params?.item;
+
     // liste des categories
     const [isLoading, setIsLoading] = useState(false);
     const [data, setData] = useState([]);
@@ -35,7 +36,9 @@ export default function Formations({navigation,route}) {
  };
   
   useEffect(()=>{
-navigation.setOptions({title: item.titre});
+    
+    navigation.setOptions({ title: item.titre });
+
   // Exécuter la fonction avec cache
 const delay = 10000; // Définir le délai à 1 minute
 getFormations(); 
@@ -182,12 +185,12 @@ style={styles.videoThumbnail}
             <View style={{marginBottom:20}}></View>
             <TouchableOpacity
               style={styles.followButton} onPress={() => navigation.navigate('Details formation',{item})}>
-              <Text style={styles.followButtonText}>Voir les détails</Text>
+              <Text style={styles.followButtonText}>Obtenir un certificat</Text>
             </TouchableOpacity>
             <View style={{marginBottom:10}}></View>
             <TouchableOpacity
               style={styles.followButton2} onPress={() => navigation.navigate('Videos',{item})}>
-              <Text style={styles.followButtonText2}>Voir les vidéos</Text>
+              <Text style={styles.followButtonText2}>Suivre les vidéos</Text>
             </TouchableOpacity>
           </View>
           )}

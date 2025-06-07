@@ -1,23 +1,16 @@
-import React, { useEffect,useState, useContext } from "react";
-import { View,Text } from 'react-native';
+import { enableScreens } from 'react-native-screens';
+enableScreens();
+import React from "react";
 import { GlobalProvider } from './global/GlobalState';
 import { GlobalCarteProvider } from "./global/GlobalCarte";
 import Routes from './routes';
 
-
-export default function App({navigation}) {
+export default function App() {
   return (
-    
-        <View style={{flex:1}}>
-          <GlobalProvider>
+    <GlobalProvider>
       <GlobalCarteProvider>
-        <Routes/>
-            <Text>Bienvenue dans notre application Adorès Cloud, nous sommes en maintenance et bientot nous serons disponibles</Text>
-       </GlobalCarteProvider>
+          <Routes />
+      </GlobalCarteProvider>
     </GlobalProvider>
-    
-        </View>
-      
   );
 }
-

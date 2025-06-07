@@ -1,10 +1,9 @@
-import React, { useEffect, useState, useContext, useRef } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import {
   View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, Alert, Image
 } from 'react-native';
-import { WebView } from 'react-native-webview';
+import MapView, { Marker, UrlTile } from 'react-native-maps';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { GlobalContext } from '../global/GlobalState';
 import { GlobalCarte } from '../global/GlobalCarte';
 
@@ -12,17 +11,21 @@ export default function GeoRepere({ navigation }) {
   const [user] = useContext(GlobalContext);
   const [carte] = useContext(GlobalCarte);
 
+  const [region, setRegion] = useState({
+    latitude: 7.6717026,
+    longitude: -5.0162297,
+    latitudeDelta: 0.0922,
+    longitudeDelta: 0.0421,
+  });
+
   const [activeTab, setActiveTab] = useState('appareils');
 
   const [dataAppareils, setDataAppareils] = useState([]);
   const [dataFamilles, setDataFamilles] = useState([]);
-
   const [searchAppareil, setSearchAppareil] = useState('');
   const [searchFamille, setSearchFamille] = useState('');
-
+  const [searchedLocation, setSearchedLocation] = useState(null);
   const [selectedLocation, setSelectedLocation] = useState(null);
-
-  const webviewRef = useRef(null);
 
   useEffect(() => {
     navigation.setOptions({ title: 'Localiser appareils & familles' });
@@ -45,7 +48,6 @@ export default function GeoRepere({ navigation }) {
     }
   };
 
-  // Lors du clic sur un item, on cherche la localisation puis on envoie à la WebView
   const afficherLocalisation = async (id) => {
     try {
       const res = await fetch(`https://adores.cloud/api/geoip-recherche.php?matricule=${encodeURIComponent(id)}`);
@@ -58,135 +60,18 @@ export default function GeoRepere({ navigation }) {
         color: loc.couleur || 'red',
       }));
 
+      setSearchedLocation(parsedData);
       if (parsedData.length > 0) {
-        setSelectedLocation(parsedData[0]);
-
-        // Envoyer la localisation à la WebView (script injecté)
-        webviewRef.current.postMessage(JSON.stringify({
-          type: 'setMarkers',
-          markers: parsedData,
-          center: { lat: parsedData[0].latitude, lng: parsedData[0].longitude }
-        }));
+        const { latitude, longitude } = parsedData[0];
+        setRegion(prev => ({ ...prev, latitude, longitude }));
+        setSelectedLocation(null); // reset selected marker on new search
       } else {
-        Alert.alert('Message', 'Localisation non trouvée');
         setSelectedLocation(null);
-        webviewRef.current.postMessage(JSON.stringify({ type: 'clearMarkers' }));
       }
     } catch {
       Alert.alert('Message', 'Localisation non trouvée');
+      setSearchedLocation(null);
       setSelectedLocation(null);
-      webviewRef.current.postMessage(JSON.stringify({ type: 'clearMarkers' }));
-    }
-  };
-
-  // Filtrer données en fonction de l'onglet actif pour éviter erreurs
-  const filterData = (data, keyword) => {
-    const lowerKeyword = keyword.toLowerCase();
-    if (activeTab === 'appareils') {
-      return data.filter(item =>
-        (item.code_appareil?.toLowerCase() || '').includes(lowerKeyword) ||
-        (item.titre_appareil?.toLowerCase() || '').includes(lowerKeyword) ||
-        (item.reference_appareil?.toLowerCase() || '').includes(lowerKeyword)
-      );
-    } else {
-      return data.filter(item =>
-        (item.nom_prenom?.toLowerCase() || '').includes(lowerKeyword) ||
-        (item.telephone?.toLowerCase() || '').includes(lowerKeyword)
-      );
-    }
-  };
-
-  useEffect(() => {
-    // Reset recherche et sélection au changement d'onglet
-    setSelectedLocation(null);
-    setSearchAppareil('');
-    setSearchFamille('');
-    webviewRef.current?.postMessage(JSON.stringify({ type: 'clearMarkers' }));
-  }, [activeTab]);
-
-  // HTML de la carte Leaflet à injecter dans la WebView
-  const leafletHTML = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <title>Carte OSM</title>
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
-      <style>
-        html, body, #map { height: 100%; margin: 0; padding: 0; }
-      </style>
-    </head>
-    <body>
-      <div id="map"></div>
-      <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
-      <script>
-        var map = L.map('map').setView([7.6717, -5.0162], 8);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          maxZoom: 19,
-        }).addTo(map);
-
-        var markers = [];
-
-        function clearMarkers() {
-          markers.forEach(m => map.removeLayer(m));
-          markers = [];
-        }
-
-        function addMarkers(markerData) {
-          clearMarkers();
-          markerData.forEach(loc => {
-            const marker = L.marker([loc.latitude, loc.longitude], {
-  title: loc.titre_appareil || loc.nom_prenom
-}).addTo(map);
-
-
-            marker.on('click', function() {
-              window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'markerClick', data: loc }));
-            });
-
-            markers.push(marker);
-          });
-        }
-
-        // Ecouter les messages venant de React Native
-        document.addEventListener('message', function(event) {
-          var msg = JSON.parse(event.data);
-          if (msg.type === 'setMarkers') {
-            addMarkers(msg.markers);
-            if(msg.center) {
-              map.setView([msg.center.lat, msg.center.lng], 12);
-            }
-          } else if(msg.type === 'clearMarkers') {
-            clearMarkers();
-          }
-        });
-
-        // For iOS
-        window.addEventListener('message', function(event) {
-          var msg = JSON.parse(event.data);
-          if (msg.type === 'setMarkers') {
-            addMarkers(msg.markers);
-            if(msg.center) {
-              map.setView([msg.center.lat, msg.center.lng], 12);
-            }
-          } else if(msg.type === 'clearMarkers') {
-            clearMarkers();
-          }
-        });
-      </script>
-    </body>
-    </html>
-  `;
-
-  // Reception des messages venant de la WebView (clic sur marker)
-  const onMessage = (event) => {
-    try {
-      const msg = JSON.parse(event.nativeEvent.data);
-      if (msg.type === 'markerClick') {
-        setSelectedLocation(msg.data);
-      }
-    } catch (e) {
-      console.warn('Erreur message WebView', e);
     }
   };
 
@@ -224,23 +109,56 @@ export default function GeoRepere({ navigation }) {
     </TouchableOpacity>
   );
 
+  // Filtrer données en fonction de l'onglet actif pour éviter les erreurs
+  const filterData = (data, keyword) => {
+    const lowerKeyword = keyword.toLowerCase();
+    if (activeTab === 'appareils') {
+      return data.filter(item =>
+        (item.code_appareil?.toLowerCase() || '').includes(lowerKeyword) ||
+        (item.titre_appareil?.toLowerCase() || '').includes(lowerKeyword) ||
+        (item.reference_appareil?.toLowerCase() || '').includes(lowerKeyword)
+      );
+    } else {
+      return data.filter(item =>
+        (item.nom_prenom?.toLowerCase() || '').includes(lowerKeyword) ||
+        (item.telephone?.toLowerCase() || '').includes(lowerKeyword)
+      );
+    }
+  };
+
+  // Reset search and selections when tab changes
+  useEffect(() => {
+    setSelectedLocation(null);
+    setSearchedLocation(null);
+    setSearchAppareil('');
+    setSearchFamille('');
+  }, [activeTab]);
+
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+    <View style={styles.container}>
       <View style={styles.mapContainer}>
-        <WebView
-          ref={webviewRef}
-          originWhitelist={['*']}
-          source={{ html: leafletHTML }}
-          onMessage={onMessage}
-          javaScriptEnabled={true}
-          domStorageEnabled={true}
-          style={{ flex: 1 }}
-        />
+        <MapView style={styles.map} region={region}>
+          {/* Tile OpenStreetMap */}
+          <UrlTile
+            urlTemplate="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+            maximumZ={19}
+            flipY={false}
+          />
+
+          {searchedLocation?.map((loc, i) => (
+            <Marker
+              key={i.toString()}
+              coordinate={{ latitude: loc.latitude, longitude: loc.longitude }}
+              title={activeTab === 'appareils' ? loc.titre_appareil : loc.nom_prenom}
+              pinColor={loc.color}
+              onPress={() => setSelectedLocation(loc)}
+            />
+          ))}
+        </MapView>
         {selectedLocation && (
-          <View style={styles.locationInfo}>
-            <Text>Nom: {activeTab === 'appareils' ? selectedLocation.titre_appareil : selectedLocation.nom_prenom}</Text>
-            <Text>Longitude: {selectedLocation.longitude.toFixed(6)} - Latitude: {selectedLocation.latitude.toFixed(6)}</Text>
-          </View>
+          <Text style={styles.ipAddress}>
+            Longitude: {selectedLocation.longitude} - Latitude: {selectedLocation.latitude}
+          </Text>
         )}
       </View>
 
@@ -278,16 +196,17 @@ export default function GeoRepere({ navigation }) {
         ListEmptyComponent={<Text style={styles.emptyList}>Aucun résultat</Text>}
         contentContainerStyle={{ paddingBottom: 20 }}
       />
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: 'white' },
-  mapContainer: { height: '45%', borderBottomWidth: 1, borderColor: '#ccc' },
-  locationInfo: {
-    position: 'absolute', bottom: 10, left: 10, right: 10,
-    backgroundColor: 'rgba(255,255,255,0.9)', padding: 10, borderRadius: 8,
+  mapContainer: { height: '45%' },
+  map: { ...StyleSheet.absoluteFillObject },
+  ipAddress: {
+    position: 'absolute', top: 10, left: 10,
+    backgroundColor: 'rgba(255,255,255,0.8)', padding: 10, borderRadius: 5,
   },
   tabBar: {
     flexDirection: 'row', justifyContent: 'space-around', backgroundColor: '#f1f1f1',
@@ -315,6 +234,12 @@ const styles = StyleSheet.create({
   userInfo: { flex: 1 },
   userName: { fontSize: 16, fontWeight: 'bold' },
   userCode: { fontSize: 14, color: '#666' },
-  markerImage: { width: 40, height: 40, borderRadius: 20 },
-  emptyList: { textAlign: 'center', marginTop: 20, color: '#999' },
+  emptyList: {
+    textAlign: 'center', color: '#999', marginTop: 20,
+  },
+  markerImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+  },
 });

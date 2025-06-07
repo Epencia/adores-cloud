@@ -16,7 +16,9 @@ import HTML from 'react-native-render-html';
 import { MaterialCommunityIcons, Feather, Ionicons } from '@expo/vector-icons';
 
 export default function Videos({ navigation, route }) {
-  const { item } = route.params;
+
+  const item = route?.params?.item;
+
   const { width: windowWidth } = useWindowDimensions();
   const ignoredDomTags = ['o:p', 'v:shape', 'v:shapetype', 'u1:p', 'font', 'color'];
 
@@ -78,7 +80,10 @@ export default function Videos({ navigation, route }) {
   }, [data, searchTerm]);
 
   useEffect(() => {
+   
+    if (navigation && item?.titre_formation) {
     navigation.setOptions({ title: item.titre_formation });
+  }
     getListeVideos();
     const intervalId = setInterval(getListeVideos2, 60000); // Refresh every 1 minute
     return () => clearInterval(intervalId);

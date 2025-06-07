@@ -33,7 +33,6 @@ const handleRefresh = () => {
  };
 
  useEffect(()=>{
-  navigation.setOptions({title: 'Notifications'});
   // Exécuter la fonction avec cache
   const delay = 10000; // Définir le délai à 1 minute
   getListeMessage(); 

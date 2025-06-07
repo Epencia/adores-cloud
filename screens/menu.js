@@ -1,4 +1,4 @@
-import React , {useEffect, useState, useContext } from 'react';
+import React , {useState } from 'react';
 import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity, TextInput } from 'react-native';
 import { MaterialCommunityIcons ,Feather} from '@expo/vector-icons';
 
@@ -19,75 +19,60 @@ const data = [
   },
   {
     id: '6',
-    image: 'account-cash-outline',
-    titre: 'RÉCHARGEMENT',
-    libelle: 'Déposer des fonds',
-    src : 'Rechargement'
+    image: 'bag-personal-outline',
+    titre: "FORMATIONS",
+    libelle: "Découvrir nos formations",
+    src : 'Categories'
   },
   {
     id: '7',
-    image: 'cash',
-    titre: 'RETRAIT',
-    libelle: 'Rétirer des fonds',
-    src : 'Retrait'
+    image: 'school',
+    titre: "DIPLOMES",
+    libelle: "Accéder à nos certificats",
+    src : 'Diplomes'
   },
   {
     id: '8',
-    image: 'bank-outline',
-    titre: 'TRANSFERT',
-    libelle: 'Envoyer des fonds',
-    src : 'Transfert'
+    image: 'map-marker-radius-outline',
+    titre: "LOCALISATION",
+    libelle: "Localiser mes appareils",
+    src : 'Geolocalisation'
   },
   {
     id: '10',
-    image: 'card-account-details-outline',
-    titre: 'TRANSACTIONS',
-    libelle: 'Voir toutes vos transactions',
-    src : 'Transactions'
-  },
-  {
-    id: '11',
-    image: 'numeric',
-    titre: 'RELEVÉ DE CARTE',
-    libelle: "Voir mon relevé de carte",
-    src : 'Releve de carte'
-  },
-  {
-    id: '13',
-    image: 'diamond-stone',
-    titre: "AIDE FINANCIÈRE",
-    libelle: "Bénéficier d'une aide financière",
-    src : "Aide financiere"
-  },
-  {
-    id: '14',
     image: 'credit-card-minus-outline',
     titre: "FACTURES",
     libelle: "Voir la liste des factures",
     src : 'Factures'
   },
   {
-    id: '17',
-    image: 'store-outline',
-    titre: "PARTENAIRES",
-    libelle: "Découvrir nos partenaires",
-    src : 'Partenaires'
+    id: '11',
+    image: 'diamond-stone',
+    titre: 'REGISTRE DE CONTROLE',
+    libelle: "Voir le registre de controle",
+    src : 'Registre de controle'
+  },
+    {
+    id: '12',
+    image: 'group',
+    titre: "FAMILLES",
+    libelle: "Voir la liste de la famille",
+    src : 'Familles'
   },
   {
-    id: '18',
-    image: 'bag-personal-outline',
-    titre: "FORMATIONS",
-    libelle: "Découvrir nos articles vendus",
-    src : 'Categories'
+    id: '13',
+    image: 'laptop',
+    titre: "APPAREILS",
+    libelle: "Voir la liste des appareils",
+    src : "Appareils"
   },
-   {
-    id: '19',
-    image: 'bag-personal-outline',
-    titre: "DIPLOMES",
-    libelle: "Découvrir nos articles vendus",
-    src : 'Diplomes'
+  {
+    id: '14',
+    image: 'diamond-stone',
+    titre: "TEST 2",
+    libelle: "Arriere plan",
+    src : "Gemini"
   },
-
 ];
 
 export default function Menu({navigation}) {
@@ -99,10 +84,6 @@ export default function Menu({navigation}) {
     item.libelle.toLowerCase().includes(searchText.toLowerCase())   
   );
 
-
-  useEffect(()=>{
-    navigation.setOptions({ title: 'Menu' });
-},[])
 
   return (
     <View style={styles.container}>

@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useContext} from 'react';
+import React, {useState, useContext} from 'react';
 import { StyleSheet, Text, View, SafeAreaView,TextInput, Image, ScrollView,TouchableOpacity,Dimensions } from "react-native";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { GlobalContext } from '../global/GlobalState';
@@ -19,13 +19,14 @@ export default function Profil({navigation}) {
   const remainingHeight = screenHeight - headerHeight;
 
     const [user, setUser] = useContext(GlobalContext);
+    
     const [data, setData] = useState([]);
     const [error, setError] = useState(null);
 
-    const [login, setLogin] = useState(user[0].login || '');
-    const [mdp, setMdp] = useState(user[0].mdp || '');
-    const [email, setEmail] = useState(user[0].email || '');
-    const [telephone, setTelephone] = useState(user[0].telephone || '');
+    const [login, setLogin] = useState((user && user[0] && user[0].login) || '');
+    const [mdp, setMdp] = useState((user && user[0] && user[0].mdp) || '');
+    const [email, setEmail] = useState((user && user[0] && user[0].email) || '');
+    const [telephone, setTelephone] = useState((user && user[0] && user[0].telephone) || '');
 
     // images
     const [photo, setPhoto] = useState(null);
@@ -38,13 +39,6 @@ export default function Profil({navigation}) {
 
     // autre
   
-
-      // PHP MYSQL
-
-      useEffect(()=>{
-        navigation.setOptions({title: 'Mon profil'});
-    },[])
-
     
     // upload image
 
@@ -80,12 +74,12 @@ export default function Profil({navigation}) {
 
 		fetch('https://adores.cloud/api/profil.php',{
 			method:'post',
-			header:{
+			headers:{
 				'Content-Type': 'multipart/form-data',
 			},
 			body:JSON.stringify({
 				// we will pass our input data to server
-				matricule: user[0].matricule,
+				matricule: (user && user.length > 0 && user[0].matricule) ? user[0].matricule : '',
 				login: login,
                 mdp : mdp,
                 email : email,
@@ -97,10 +91,10 @@ export default function Profil({navigation}) {
 		})
 		.then((response) => response.json())
 		 .then((responseJson)=>{
-      alert(responseJson);
+      Alert.alert("Message",responseJson);
 		 })
 		 .catch((error)=>{
-		 alert(error);
+		 Alert.alert("Erreur",error);
 		 });
 		
 	}
@@ -125,9 +119,9 @@ export default function Profil({navigation}) {
             />
         ) : (
             // Affichez l'image existante ou un logo par défaut
-            user[0].photo64 ? (
+            user?.[0]?.photo64 ? (
                 <Image
-                    source={{ uri: `data:${user[0].type};base64,${user[0].photo64.toString('base64')}` }}
+                    source={{ uri: `data:${user[0].type};base64,${user[0].photo64}` }}
                     style={styles.image}
                     resizeMode="center" 
                 />
@@ -147,8 +141,8 @@ export default function Profil({navigation}) {
                 </View>
 
                 <View style={styles.infoContainer}>
-                    <Text style={[styles.text, { fontWeight: 300, fontSize: 32 }]}>{user[0].nom_prenom}</Text>
-                    <Text style={[styles.text, { color: "black", fontSize: 16 }]}>{user[0].role}</Text>
+                    <Text style={[styles.text, { fontWeight: 300, fontSize: 32 }]}>{Array.isArray(user) && user.length > 0 ? user[0].nom_prenom || '' : ''}</Text>
+                    <Text style={[styles.text, { color: "black", fontSize: 16 }]}>{Array.isArray(user) && user.length > 0 ? user[0].role || '' : ''}</Text>
                 </View>
               
         
@@ -348,8 +342,8 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         paddingHorizontal: 20,
         borderWidth: 1,
-        backgroundColor: '#2593B6',
-        borderColor: '#2593B6',
+        backgroundColor: '#0A84FF',
+        borderColor: '#0A84FF',
       },
 
         /** Input */

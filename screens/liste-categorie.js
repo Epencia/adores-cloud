@@ -1,7 +1,7 @@
 import React , {useEffect, useState, useContext , useMemo } from 'react';
 import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity, TextInput,ActivityIndicator } from 'react-native';
 import { GlobalContext } from '../global/GlobalState';
-import { MaterialCommunityIcons, Feather } from '@expo/vector-icons';
+import { MaterialCommunityIcons, Feather,FontAwesome5 } from '@expo/vector-icons';
 
 
 
@@ -27,7 +27,6 @@ export default function Categories({navigation,item}) {
   
   
   useEffect(()=>{
-    navigation.setOptions({ title: 'Catégories' });
     // Exécuter la fonction avec cache
     const delay = 10000; // Définir le délai à 1 minute
     getFormations(); 
@@ -164,6 +163,9 @@ style={styles.videoThumbnail}
 
       )}/>
 
+      <TouchableOpacity style={styles.floatingButton} onPress={() => navigation.navigate('Liste des diplomes')}>
+        <FontAwesome5 name="graduation-cap" size={24} color="white" />
+      </TouchableOpacity>
 
     </View>
   );
@@ -199,10 +201,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ccc',
     padding:10,
+    marginRight:10
   },
   videoThumbnail: {
-    width: 88,
-    height: 88,
+    width: 50,
+    height: 50,
     borderRadius: 12,
   },
   videoInfo: {
@@ -222,5 +225,21 @@ const styles = StyleSheet.create({
   videoViews: {
     fontSize: 14,
     color: 'gray',
+  },
+  floatingButton: {
+    position: 'absolute',
+    bottom: 30,
+    right: 20,
+    backgroundColor: '#007bff',
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
   },
 });

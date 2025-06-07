@@ -4,10 +4,10 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { View, Text, Image,  StyleSheet, TouchableOpacity, } from 'react-native';
 import { GlobalContext } from '../global/GlobalState';
 import Menu from "../screens/menu";
-import RegistreControle from "../screens/registre-controle";
 import Categories from "../screens/liste-categorie";
 import Accueil from "../screens/accueil";
-import Partenaires from "../screens/liste-partenaire";
+import GeoRecherche from "../screens/geo-recherche";
+import Factures from "../screens/liste-facture";
 
 
 const Tab = createBottomTabNavigator();
@@ -35,7 +35,7 @@ const CustomHeader = ({navigation}) => {
 // notfications
   const getNombreNotification = () =>{
 
-  fetch(`https://adores.cloud/api/nombre-notification.php?id=${user[0].id}`,{
+  fetch(`https://adores.cloud/api/nombre-notification.php?id=${user?.[0].id}`,{
     method:'post',
       header:{
           'Accept': 'application/json',
@@ -60,26 +60,16 @@ const CustomHeader = ({navigation}) => {
  
 
     <View style={{flexDirection: 'row',alignItems: 'center',justifyContent: 'flex-end',marginLeft:10}}>
-    <Image
-alt=""
-source={require('../assets/logo.png')}
-style={styles.avatarImg}
-/>
+    <Image alt="" source={require('../assets/logo.png')} style={styles.avatarImg} />
     <Text style={{color: '#414d63',fontSize: 20,fontWeight: 'bold',marginRight:80,marginLeft:5}}>Adorès</Text>
-
-
 
     <TouchableOpacity onPress={() => navigation.navigate('Accueil')}>
     <Icon name="credit-card" size={24} color="#414d63" style={{marginRight: 15,}} />
     </TouchableOpacity>
 
-    
-    
-    
-
     <TouchableOpacity onPress={() => navigation.navigate('Notifications')}>
     <Icon name="notifications" size={24} color="#414d63" style={{marginRight: 10,}} />
-    {count > 0 && (
+    {count && count > 0 && (
           <View
           style={{
             position: 'absolute',
@@ -97,7 +87,7 @@ style={styles.avatarImg}
         )}
     </TouchableOpacity>
 
-    <TouchableOpacity onPress={() => navigation.navigate('Deconnexion')}>
+    <TouchableOpacity onPress={() => navigation.navigate('Déconnexion')}>
     <Icon name="logout" size={24} color="#414d63" />
     </TouchableOpacity>
     
@@ -105,18 +95,10 @@ style={styles.avatarImg}
 
     <TouchableOpacity onPress={() => navigation.navigate('Profil')}>
 <View style={styles.avatar}>
-{user[0].photo64 ? (
-<Image
-alt=""
-source={{ uri: `data:${user[0].type};base64,${user[0].photo64.toString('base64')}` }}
-style={styles.avatarImg}
-/>
+{user?.[0]?.photo64 ? (
+<Image alt="" source={{ uri: `data:${user[0].type};base64,${user[0].photo64}` }} style={styles.avatarImg} />
 ) : (
-<Image
-alt=""
-source={require("../assets/user.jpg")}
-style={styles.avatarImg}
-/>
+<Image alt="" source={require("../assets/user.jpg")} style={styles.avatarImg} />
   )}
 </View>
 </TouchableOpacity>
@@ -130,8 +112,6 @@ style={styles.avatarImg}
 
 export default function BottomTabs(){
 
-
-
   return (
     <Tab.Navigator
       initialRouteName="Accueil"
@@ -141,13 +121,11 @@ export default function BottomTabs(){
       }}
     >
       
-  
-
       <Tab.Screen
         name="Accueil"
         component={Accueil}
         options={({ navigation }) => ({
-          tabBarIcon: ({ color, size }) => (
+          tabBarIcon: ({ color }) => (
             <Icon name="home" color={color} size={28} />
           ),
           headerTitle: () => (
@@ -161,12 +139,12 @@ export default function BottomTabs(){
       
 
       <Tab.Screen
-  name="Découvrir"
-  component={Partenaires}
+  name="Diplômes"
+  component={Categories}
   options={({ navigation }) => ({
-    tabBarLabel: 'Découvrir', // 🔹 Texte affiché dans l’onglet (onglet bas)
-    tabBarIcon: ({ color, size }) => (
-      <Icon name="explore" color={color} size={28} />
+    tabBarLabel: 'Diplômes',
+    tabBarIcon: ({ color }) => (
+      <Icon name="school" color={color} size={28} />
     ),
     headerTitle: () => <CustomHeader navigation={navigation} />,
     headerShown: true,
@@ -176,44 +154,44 @@ export default function BottomTabs(){
 
 
       <Tab.Screen
-        name="Offices"
+        name="Orientation"
+        component={GeoRecherche}
+        options={({ navigation }) => ({
+            tabBarLabel: 'Orientation',
+          tabBarIcon: ({ color }) => (
+            <Icon name="explore" color={color} size={28} />
+          ),
+          headerTitle: () => (
+            <CustomHeader navigation={navigation} />
+
+          ),
+          headerShown: true,
+        })}
+      />
+
+
+      <Tab.Screen
+        name="Reçus"
+        component={Factures}
+        options={({ navigation }) => ({
+        tabBarLabel: 'Reçus',
+          tabBarIcon: ({ color }) => (
+            <Icon name="receipt-long" color={color} size={28} />
+          ),
+          headerTitle: () => (
+            <CustomHeader navigation={navigation} />
+
+          ),
+          headerShown: true,
+        })}
+      />
+      <Tab.Screen
+        name="Espace"
         component={Menu}
         options={({ navigation }) => ({
-            tabBarLabel: 'Offices',
-          tabBarIcon: ({ color, size }) => (
+            tabBarLabel: 'Espace',
+          tabBarIcon: ({ color }) => (
             <Icon name="apps" color={color} size={28} />
-          ),
-          headerTitle: () => (
-            <CustomHeader navigation={navigation} />
-
-          ),
-          headerShown: true,
-        })}
-      />
-
-
-      <Tab.Screen
-        name="Registres"
-        component={RegistreControle}
-        options={({ navigation }) => ({
-        tabBarLabel: 'Registres',
-          tabBarIcon: ({ color, size }) => (
-            <Icon name="person-add" color={color} size={28} />
-          ),
-          headerTitle: () => (
-            <CustomHeader navigation={navigation} />
-
-          ),
-          headerShown: true,
-        })}
-      />
-      <Tab.Screen
-        name="Etudes"
-        component={Categories}
-        options={({ navigation }) => ({
-            tabBarLabel: 'Etudes',
-          tabBarIcon: ({ color, size }) => (
-            <Icon name="school" color={color} size={28} />
           ),
           headerTitle: () => (
             <CustomHeader navigation={navigation} />

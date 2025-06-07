@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useState, useContext } from "react";
 import {
   StyleSheet,
   SafeAreaView,
@@ -18,15 +18,8 @@ export default function Deconnexion({ navigation }) {
 
   const getLogoutScreen = () => {
     setUser(null);
-    navigation.reset({
-      index: 0,
-      routes: [{ name: 'Connexion' }],
-    });
+    navigation.navigate("Connexion");
   };
-
-  useEffect(() => {
-    navigation.setOptions({ title: 'Déconnexion' });
-  }, []);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>

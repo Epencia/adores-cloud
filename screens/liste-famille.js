@@ -1,11 +1,12 @@
-import {SafeAreaView,StyleSheet,View,FlatList,Image,Text,TouchableOpacity,TextInput,ActivityIndicator,ScrollView,Linking} from 'react-native';
+import {StyleSheet,View,FlatList,Image,Text,TouchableOpacity,TextInput,ActivityIndicator,ScrollView,Linking} from 'react-native';
 import React , {useEffect, useState, useContext, useMemo } from 'react';
 import { MaterialCommunityIcons,Feather } from '@expo/vector-icons';
 import { GlobalContext } from '../global/GlobalState';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 
 
-export default function Partenaires({navigation,item}) {
+export default function ListeFamille({navigation,item}) {
 
   // liste des categories
   const [isLoading, setIsLoading] = useState(false);
@@ -24,7 +25,6 @@ export default function Partenaires({navigation,item}) {
   };
 
 useEffect(()=>{
-navigation.setOptions({title: "Partenaires"});
 // Exécuter la fonction avec cache
 const delay = 10000; // Définir le délai à 1 minute
 getPartenaire(); 
@@ -51,7 +51,7 @@ return () => clearInterval(intervalId);
 const getPartenaire = async () => {
   setIsLoading(true);
  try {
-  const response = await fetch(`https://adores.cloud/api/liste-partenaire.php`, {
+  const response = await fetch(`https://adores.cloud/api/liste-famille.php?matricule=${user[0].matricule}`, {
     headers: {
       //'Cache-Control': 'no-cache',
     },
@@ -67,7 +67,7 @@ const getPartenaire = async () => {
 // liste 
 const getPartenaire2 = async () => {
  try {
-  const response = await fetch(`https://adores.cloud/api/liste-partenaire.php`, {
+  const response = await fetch(`https://adores.cloud/api/liste-famille.php?matricule=${user[0].matricule}`, {
     headers: {
       'Cache-Control': 'no-cache',
     },
@@ -84,10 +84,8 @@ const getPartenaire2 = async () => {
   const searchItems = useMemo(() => {
     return () => {
     const filteredData = data.filter(item =>
-      item.nom_societe.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.email_societe.toLowerCase().includes(searchTerm.toLowerCase())   ||
-      item.categorie_societe.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.adresse_societe.toLowerCase().includes(searchTerm.toLowerCase())
+      item.nom_prenom.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.telephone.toLowerCase().includes(searchTerm.toLowerCase()) 
     );
     return filteredData;
 };
@@ -119,8 +117,7 @@ if (error) {
 // Erreur et Chargement --fin--
 
 return (
-  <View style={styles.container}>
-
+  <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
 
 {data.length > 0 ? (
 <View style={styles.searchBar}>
@@ -146,47 +143,44 @@ value={searchTerm}
 
     <FlatList
        data={searchTerm ? searchItems() : data}
-      keyExtractor={(item) => item.code_societe}
+      keyExtractor={(item) => item.id}
       renderItem={({item}) => (
         <View style={styles.experienceItem}>
          
-        <TouchableOpacity  onPress={() => navigation.navigate("Prestations", { item })}>
+        <TouchableOpacity  onPress={() => navigation.navigate("Edition de famille", { item })}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                  {item.photo64 ? (
-          <Image
-alt=""
-source={{ uri: `data:${item.type};base64,${item.photo64.toString('base64')}` }}
-style={styles.image}
-/>
+<Image alt="" source={{ uri: `data:${item.type};base64,${item.photo64.toString('base64')}` }} style={styles.image}/>
 ) : (
-<Image
-alt=""
-source={require("../assets/logo.png")}
-style={styles.image}
-/>
+<Image alt="" source={require("../assets/logo.png")} style={styles.image}/>
 )}
 
         <View style={styles.textContainer}>
-
-          <Text style={styles.text}>{item.nom_societe? item.nom_societe : "Aucun résultat"}</Text>
-
+          <Text style={styles.text}>{item.nom_prenom? item.nom_prenom : "Aucun résultat"}</Text>
           <View style={styles.dataContainer}>
-            <Feather name="user" size={16} color="gray" style={styles.icon} />
-            <Text style={styles.dataText}>{item.categorie_societe ? item.categorie_societe : "Aucun résultat"}</Text>
-          </View>
-          <View style={styles.dataContainer}>
-            <Feather name="map" size={16} color="gray" style={styles.icon} />
-            <Text style={styles.dataText}>{item.adresse_societe ? item.adresse_societe : "Aucun résultat"}</Text>
+            <Feather name="phone" size={16} color="gray" style={styles.icon} />
+            <Text style={styles.dataText}>{item.telephone ? item.telephone : "Aucun résultat"}</Text>
           </View>
         </View>
         </View>
-
 
       </TouchableOpacity>
       </View>
       )}
     />
-  </View>
+
+    <View style={styles.overlay}>
+                  <View style={styles.footer}>
+                    <TouchableOpacity onPress={() => navigation.navigate('Edition de famille')} style={{ flex: 1 }}>
+                      <View style={styles.btn}>
+                        <MaterialCommunityIcons color="#fff" name="pencil" size={20} />
+                        <Text style={styles.buttonText}>Editer une famille</Text>
+                      </View>
+                    </TouchableOpacity>
+                  </View>
+   </View>
+
+  </SafeAreaView>
 );
 }
 
@@ -282,7 +276,64 @@ followButton2: {
 followButtonText2: {
   color: '#007BFF',
 },
+// OVERLAY
+   overlay: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: '#fff',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingTop: 12,
+    paddingHorizontal: 16,
+    paddingBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.22,
+    shadowRadius: 2.22,
+    elevation: 3,
+  },
+  footer: {
+    flexGrow: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#fff',
+  },
+  btn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderWidth: 1,
+    backgroundColor: '#0A84FF',
+    borderColor: '#0A84FF',
+    height: 50,
+    //marginRight:10
+  },
+   button: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderWidth: 1,
+    backgroundColor: '#3C64B1', // Couleur Hostinger / personnalisée
+    borderColor: '#3C64B1',
+    height: 50,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'bold',
+    marginLeft:5
+  },
 });
-
-
-
