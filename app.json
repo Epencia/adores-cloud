@@ -35,8 +35,12 @@
         "NOTIFICATIONS",
         "RECEIVE_BOOT_COMPLETED",
         "VIBRATE",
-        "com.google.android.c2dm.permission.RECEIVE"
-      ]
+        "com.google.android.c2dm.permission.RECEIVE",
+        "android.permission.RECEIVE_BOOT_COMPLETED",
+        "android.permission.WAKE_LOCK",
+        "android.permission.FOREGROUND_SERVICE"
+      ],
+      "usesCleartextTraffic": true
     },
     "web": {
       "favicon": "./assets/favlogo.png"
@@ -48,7 +52,19 @@
     },
     "owner": "serviteur01",
     "plugins": [
-      "expo-notifications"
-    ]
+      "expo-notifications",
+      [
+        "expo-background-fetch",
+        {
+          "minimumInterval": 15,
+          "stopOnTerminate": false,
+          "startOnBoot": true
+        }
+      ]
+    ],
+    "notification": {
+      "icon": "./assets/favlogo.png",
+      "color": "#ffffff"
+    }
   }
 }

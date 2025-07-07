@@ -63,7 +63,7 @@ export default function LoginUser({navigation}) {
     }
               // Rediriger ou stocker token
               setUser(data[0]);
-              navigation.navigate("Accueil");
+              navigation.navigate("BottomTabs");
             } else {
               Alert.alert('Erreur', data || 'Identifiants incorrects');
             }

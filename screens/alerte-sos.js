@@ -4,13 +4,13 @@ import * as Location from 'expo-location';
 import * as Sensors from 'expo-sensors';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Animatable from 'react-native-animatable';
-import { MaterialIcons } from '@expo/vector-icons';
+import {Feather, MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import Modal from 'react-native-modal';
 
 const { width, height } = Dimensions.get('window');
 
-export default function AlerteSOS () {
+export default function AlerteSOS ({navigation}) {
   const [location, setLocation] = useState(null);
   const [isModalVisible, setModalVisible] = useState(false);
   const [countdown, setCountdown] = useState(10);
@@ -160,6 +160,13 @@ export default function AlerteSOS () {
           </TouchableOpacity>
         </View>
       </Modal>
+
+       <TouchableOpacity
+                style={styles.floatingButtonBottom}
+                onPress={()=>navigation.navigate("Edition d'alerte")}
+              >
+                <Feather name="edit" size={24} color="black" />
+              </TouchableOpacity>
     </LinearGradient>
   );
 };
@@ -248,4 +255,22 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#fff',
   },
+ floatingButtonBottom: {
+  position: 'absolute',       // Positionnement flottant
+  bottom: 15,                 // Distance depuis le bas
+  right: 15,                  // Distance depuis la droite
+  backgroundColor: 'white',
+  width: 50,
+  height: 50,
+  borderRadius: 25,
+  justifyContent: 'center',
+  alignItems: 'center',
+  elevation: 5,
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.3,
+  shadowRadius: 3,
+  zIndex: 3,
+}
+
 });

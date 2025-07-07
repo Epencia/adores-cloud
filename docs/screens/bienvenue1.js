@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, useContext } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -11,30 +11,29 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { GlobalContext } from '../global/GlobalState';
 
 const { width, height } = Dimensions.get('window');
 
 const slides = [
   {
     id: '1',
-    title: 'Annonces 100% temps réel',
+    title: 'Localisation de la famille et des amis',
     description:
-      "Soyez les premiers informés des nouvelles annonces près de vous grâce à nos notifications instantanées.",
+      'Obtenez des informations précises pour savoir où va votre enfant ou votre parent.',
     image: require('../assets/images/images1.png'),
   },
   {
     id: '2',
-    title: 'Alertes personnalisées',
+    title: 'Suivi en temps réel',
     description:
-      "Activez des alertes pour les articles qui vous intéressent et ne ratez jamais la bonne affaire.",
+      'Gardez un œil sur votre famille et vos amis avec des alertes en temps réel.',
     image: require('../assets/images/images2.png'),
   },
   {
     id: '3',
-    title: 'Notifications intelligentes',
+    title: 'Ordinateurs perdus ou volés',
     description:
-      "Nos algorithmes vous envoient uniquement les annonces qui correspondent à vos recherches.",
+      'Suivez les traces de votre ordinateur après un vol ou une perte.',
     image: require('../assets/images/images3.png'),
   },
 ];
@@ -43,10 +42,7 @@ export default function Bienvenue({ navigation }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const flatListRef = useRef(null);
   const directionRef = useRef(1);
-  const [count, setCount] = useState(0);
-  const [user] = useContext(GlobalContext);
 
-  // Effet pour le carrousel automatique
   useEffect(() => {
     const interval = setInterval(() => {
       let nextIndex = currentIndex + directionRef.current;
@@ -65,30 +61,6 @@ export default function Bienvenue({ navigation }) {
 
     return () => clearInterval(interval);
   }, [currentIndex]);
-
-  // Effet pour les notifications
-  useEffect(() => {
-    const getNombreNotification = () => {
-      fetch(`https://rouah.net/api/nombre-annonce.php`, {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-      })
-        .then((response) => response.json())
-        .then((result) => {
-          const notificationCount = typeof result === 'number' ? result : result?.count || 0;
-          setCount(notificationCount);
-        })
-        .catch((error) => {
-          console.error('Erreur notification:', error);
-        });
-    };
-
-    const intervalId = setInterval(getNombreNotification, 1000);
-    return () => clearInterval(intervalId);
-  }, []);
 
   const scrollToIndex = (index) => {
     flatListRef.current?.scrollToIndex({ index });
@@ -116,24 +88,26 @@ export default function Bienvenue({ navigation }) {
             style={styles.avatarImg}
             resizeMode="contain"
           />
-          <Text style={{color: '#414d63',fontSize: 20,fontWeight: 'bold',marginLeft:8}}>Rouah</Text>
+          <Text style={{color: '#414d63',fontSize: 20,fontWeight: 'bold',marginLeft:8}}>Adorès Cloud</Text>
           </View>
           <View style={styles.headerButtons}>
             <TouchableOpacity
               style={styles.appButton2}
-              onPress={() => navigation.navigate('Annonces')}
+              onPress={() => navigation.navigate('Gemini')}
             >
-              <MaterialCommunityIcons name="bell" size={24} color="#414d63" />
-              {count > 0 && (
-                <View style={styles.notificationBadge}>
-                  <Text style={styles.notificationText}>{count}</Text>
-                </View>
-              )}
+              <MaterialCommunityIcons name="chat" size={24} color="#414d63" />
             </TouchableOpacity>
             <View style={{ marginRight: 2 }} />
             <TouchableOpacity
               style={styles.appButton2}
-              onPress={() => navigation.navigate('Gemini')}
+              onPress={() => navigation.navigate('Registre de controle')}
+            >
+              <MaterialCommunityIcons name="book-open-page-variant-outline" size={24} color="#414d63" />
+            </TouchableOpacity>
+            <View style={{ marginRight: 2 }} />
+            <TouchableOpacity
+              style={styles.appButton2}
+              onPress={() => navigation.navigate('Connexion')}
             >
               <MaterialCommunityIcons name="login" size={24} color="#414d63" />
             </TouchableOpacity>
@@ -178,21 +152,12 @@ export default function Bienvenue({ navigation }) {
 
         {/* Buttons */}
         <View style={styles.buttonContainer}>
-          {user?.matricule ? (
           <TouchableOpacity
-            onPress={() => navigation.navigate('BottomTabs')}
-            style={styles.skipButton}
-          >
-            <Text style={styles.skipText}>MENU ›</Text>
-          </TouchableOpacity>
-          ) : (
-            <TouchableOpacity
             onPress={() => navigation.navigate('Connexion')}
             style={styles.skipButton}
           >
             <Text style={styles.skipText}>CONNEXION ›</Text>
           </TouchableOpacity>
-            )}
           <TouchableOpacity
             onPress={() => navigation.navigate('Inscription')}
             style={styles.nextButton}
@@ -236,15 +201,14 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
     borderRadius: 9999,
-    borderWidth: 1,
-    borderColor: 'gray'
+    borderWidth:1,
+    borderColor:'gray'
   },
   headerButtons: {
     flexDirection: 'row',
   },
   appButton2: {
     padding: 8,
-    position: 'relative',
   },
   sliderContainer: {
     flex: 1,
@@ -288,7 +252,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 4,
   },
   activeDot: {
-    backgroundColor: '#fa4447',
+    backgroundColor: '#0A84FF',
     width: 16,
   },
   buttonContainer: {
@@ -307,7 +271,7 @@ const styles = StyleSheet.create({
   },
   nextButton: {
     padding: 14,
-    backgroundColor: '#fa4447',
+    backgroundColor: '#0A84FF',
     borderRadius: 8,
     flex: 1,
     marginLeft: 10,
@@ -319,22 +283,6 @@ const styles = StyleSheet.create({
   },
   nextText: {
     color: '#fff',
-    fontWeight: 'bold',
-  },
-  notificationBadge: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    backgroundColor: 'red',
-    borderRadius: 50,
-    width: 15,
-    height: 15,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  notificationText: {
-    color: 'white',
-    fontSize: 8,
     fontWeight: 'bold',
   },
 });

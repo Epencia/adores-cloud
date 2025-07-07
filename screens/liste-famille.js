@@ -171,7 +171,7 @@ value={searchTerm}
 
     <View style={styles.overlay}>
                   <View style={styles.footer}>
-                    <TouchableOpacity onPress={() => navigation.navigate('Edition de famille')} style={{ flex: 1 }}>
+                    <TouchableOpacity onPress={() => navigation.navigate('Contacts')} style={{ flex: 1 }}>
                       <View style={styles.btn}>
                         <MaterialCommunityIcons color="#fff" name="pencil" size={20} />
                         <Text style={styles.buttonText}>Editer une famille</Text>

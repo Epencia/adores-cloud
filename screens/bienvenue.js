@@ -21,6 +21,9 @@ import * as Notifications from 'expo-notifications';
 
 const { width, height } = Dimensions.get('window');
 
+// Créez une référence de navigation
+export const navigationRef = React.createRef();
+
 export default function Bienvenue({ navigation }) {
   const isConnected = ConnexionInternet();
   const [matricule, setMatricule] = useState('');
@@ -53,16 +56,48 @@ export default function Bienvenue({ navigation }) {
     }
   };
 
-  // Function to setup notification listeners
-  const setupNotificationListeners = (onNotification, onResponse) => {
-  const notificationListener = Notifications.addNotificationReceivedListener(onNotification);
-  const responseListener = Notifications.addNotificationResponseReceivedListener(onResponse);
-  
-  return () => {
-    notificationListener.remove();
-    responseListener.remove();
+  // Configuration des notifications
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowBanner: true,
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+  }),
+});
+
+// Gestion du clic sur notification
+const handleNotificationResponse = (response) => {
+    const data = response.notification.request.content.data;
+    
+    // Gestion des notifications d'annonces
+    if (data?.screen === "Signal d'alerte" && navigationRef.current) {
+      navigationRef.current.navigate("Signal d'alerte", {
+            id_geoip: data.params.id_geoip,
+            utilisateur_id: data.params.utilisateur_id,
+            latitude: data.params.latitude,
+            longitude: data.params.longitude,
+            adresse: data.params.adresse
+        });
+    } 
   };
-};
+
+  // Function to setup notification listeners
+   const setupNotificationListeners = () => {
+    const notificationListener = Notifications.addNotificationReceivedListener((notification) => {
+      setNotification(notification);
+      Alert.alert(
+        notification.request.content.title || 'Notification',
+        notification.request.content.body
+      );
+    });
+    const responseListener = Notifications.addNotificationResponseReceivedListener(handleNotificationResponse);
+    
+    return () => {
+      notificationListener.remove();
+      responseListener.remove();
+    };
+  };
+
 
   // Function to send token to server
   const sendTokenToServer = async (token) => {

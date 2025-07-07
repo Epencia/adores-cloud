@@ -18,46 +18,67 @@ const data = [
     src : 'Profil'
   },
   {
-    id: '8',
+    id: '3',
     image: 'map-marker-radius-outline',
     titre: "LOCALISATION",
     libelle: "Localiser mes appareils",
     src : 'Geolocalisation'
   },
   {
-    id: '10',
+    id: '4',
     image: 'shield-outline',
-    titre: "ZONES DANGEREUSES",
+    titre: "ZONES DANGÉREUSES",
     libelle: "Définir les zones de dangers",
-    src : 'Zones'
+    src : 'Zone dangereuse'
   },
    {
-    id: '11',
+    id: '5',
     image: 'account-cancel-outline',
     titre: "MENACES",
     libelle: "Dévoiler les personnes dangereuses",
-    src : 'Zones'
+    src : 'Menaces'
   },
     {
-    id: '12',
+    id: '6',
     image: 'group',
     titre: "FAMILLES",
     libelle: "Voir la liste de la famille",
     src : 'Familles'
   },
   {
-    id: '13',
+    id: '7',
     image: 'laptop',
     titre: "APPAREILS",
     libelle: "Voir la liste des appareils",
     src : "Appareils"
   },
   {
-    id: '14',
+    id: '8',
     image: 'contacts-outline',
     titre: "CONTACTS",
     libelle: "Retrouvez vos contacts",
     src : "Contacts"
+  },
+   {
+    id: '9',
+    image: 'magnet',
+    titre: "DÉTECTEUR MAGNÉTIQUE",
+    libelle: "Trouvez les caméras et micros",
+    src : "Detecteur magnetique"
+  },
+   {
+    id: '10',
+    image: 'speedometer',
+    titre: "DÉTECTEUR DE VITESSE",
+    libelle: "Régler la vitesse",
+    src : "Detecteur de vitesse"
+  },
+   {
+    id: '11',
+    image: 'ghost-outline',
+    titre: "DÉTECTEUR PARANORMAL",
+    libelle: "Signaler la présence des esprits",
+    src : "Detecteur paranormal"
   },
    {
     id: '15',

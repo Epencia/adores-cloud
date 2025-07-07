@@ -287,7 +287,7 @@ const openGoogleMaps = (latitude, longitude) => {
         </View>
         <View style={styles.cardHeaderContent}>
           <Text style={styles.cardTitle}>{item.identite}</Text>
-          <Text style={styles.cardSubtitle}>{item.telephone || 'Téléphone non défini'}</Text>
+          <Text style={styles.cardSubtitle}>{item.telephone || 'Pas de téléphone'}</Text>
         </View>
       </View>
 
